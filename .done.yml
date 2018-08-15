@@ -1,0 +1,47 @@
+workspace:
+  base: /betaflight
+  path: src
+
+clone:
+  git:
+    image: plugins/git:next
+    depth: 50
+    tags: true
+
+pipeline:
+  build:
+    image: ubuntu:latest
+    commands:
+      - apt update
+      - apt install -y python make build-essential libc6-i386 time libblocksruntime-dev lcov git curl wget
+      - make arm_sdk_install
+      - make
+    when:
+      branch: master
+
+  build_release:
+    image: ubuntu:latest
+    commands:
+      - apt update
+      - apt install -y python make build-essential libc6-i386 time libblocksruntime-dev lcov git curl wget
+      - make arm_sdk_install
+      - make all
+    when:
+      event: tag
+
+
+  gitea_release:
+    image: plugins/gitea-release:1.0.0
+    secrets: [ gitea_token ]
+    base_url: https://repo.root-zone.info
+    files:
+      - obj/*.hex
+    checksum:
+      - md5
+      - sha1
+      - sha256
+      - sha512
+      - adler32
+      - crc32
+    when:
+      event: tag
