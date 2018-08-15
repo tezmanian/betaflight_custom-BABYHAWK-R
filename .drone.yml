@@ -17,7 +17,7 @@ pipeline:
       - make arm_sdk_install
       - make
     when:
-      branch: master
+      branch: babyhawk-r
 
   build_release:
     image: ubuntu:latest
@@ -25,7 +25,7 @@ pipeline:
       - apt update
       - apt install -y python make build-essential libc6-i386 time libblocksruntime-dev lcov git curl wget
       - make arm_sdk_install
-      - make all
+      - make BABYHAWKR
     when:
       event: tag
 
