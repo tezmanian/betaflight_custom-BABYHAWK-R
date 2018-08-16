@@ -167,14 +167,13 @@ typedef struct frSkyTableInfo_s {
     uint8_t index;
 } frSkyTableInfo_t;
 
-static frSkyTableInfo_t frSkyDataIdTableInfo = {frSkyDataIdTable, 0, 0};
+static frSkyTableInfo_t frSkyDataIdTableInfo = { frSkyDataIdTable, 0, 0 };
 #ifdef USE_ESC_SENSOR
-#define ESC_DATAID_COUNT sizeof(frSkyEscDataIdTable)/sizeof(uint16_t)
+#define ESC_DATAID_COUNT ( sizeof(frSkyEscDataIdTable) / sizeof(uint16_t) )
 
 static frSkyTableInfo_t frSkyEscDataIdTableInfo = {frSkyEscDataIdTable, ESC_DATAID_COUNT, 0};
 #endif
 
-#define __USE_C99_MATH // for roundf()
 #define SMARTPORT_BAUD 57600
 #define SMARTPORT_UART_MODE MODE_RXTX
 #define SMARTPORT_SERVICE_TIMEOUT_MS 1 // max allowed time to find a value to send
@@ -318,6 +317,10 @@ static void smartPortSendPackage(uint16_t id, uint32_t val)
     smartPortWriteFrame(&payload);
 }
 
+static bool reportExtendedEscSensors(void) {
+    return feature(FEATURE_ESC_SENSOR) && telemetryConfig()->smartport_use_extra_sensors;
+}
+
 #define ADD_SENSOR(dataId) frSkyDataIdTableInfo.table[frSkyDataIdTableInfo.index++] = dataId
 
 static void initSmartPortSensors(void)
@@ -329,23 +332,23 @@ static void initSmartPortSensors(void)
 
     if (isBatteryVoltageConfigured()) {
 #ifdef USE_ESC_SENSOR
-        if (!feature(FEATURE_ESC_SENSOR)) {
+        if (!reportExtendedEscSensors())
 #endif
+        {
             ADD_SENSOR(FSSP_DATAID_VFAS);
-#ifdef USE_ESC_SENSOR
         }
-#endif
+
         ADD_SENSOR(FSSP_DATAID_A4);
     }
 
     if (isAmperageConfigured()) {
 #ifdef USE_ESC_SENSOR
-        if (!feature(FEATURE_ESC_SENSOR)) {
+        if (!reportExtendedEscSensors())
 #endif
+        {
             ADD_SENSOR(FSSP_DATAID_CURRENT);
-#ifdef USE_ESC_SENSOR
         }
-#endif
+
         ADD_SENSOR(FSSP_DATAID_FUEL);
     }
 
@@ -375,7 +378,7 @@ static void initSmartPortSensors(void)
     frSkyDataIdTableInfo.index = 0;
 
 #ifdef USE_ESC_SENSOR
-    if (feature(FEATURE_ESC_SENSOR)) {
+    if (reportExtendedEscSensors()) {
         frSkyEscDataIdTableInfo.size = ESC_DATAID_COUNT;
     } else {
         frSkyEscDataIdTableInfo.size = 0;
@@ -473,6 +476,8 @@ void processSmartPortTelemetry(smartPortPayload_t *payload, volatile bool *clear
          uint8_t *frameStart = (uint8_t *)&payload->valueId;
          smartPortMspReplyPending = handleMspFrame(frameStart, SMARTPORT_MSP_PAYLOAD_SIZE);
     }
+#else
+    UNUSED(payload);
 #endif
 
     bool doRun = true;
@@ -674,31 +679,36 @@ void processSmartPortTelemetry(smartPortPayload_t *payload, volatile bool *clear
                 } else {
                     tmpi += 2;
                 }
-                if (ARMING_FLAG(ARMED))
+                if (ARMING_FLAG(ARMED)) {
                     tmpi += 4;
+                }
 
-                if (FLIGHT_MODE(ANGLE_MODE))
+                if (FLIGHT_MODE(ANGLE_MODE)) {
                     tmpi += 10;
-                if (FLIGHT_MODE(HORIZON_MODE))
+                }
+                if (FLIGHT_MODE(HORIZON_MODE)) {
                     tmpi += 20;
-                if (FLIGHT_MODE(UNUSED_MODE))
+                }
+                if (FLIGHT_MODE(PASSTHRU_MODE)) {
                     tmpi += 40;
-                if (FLIGHT_MODE(PASSTHRU_MODE))
-                    tmpi += 40;
+                }
 
-                if (FLIGHT_MODE(MAG_MODE))
+                if (FLIGHT_MODE(MAG_MODE)) {
                     tmpi += 100;
-                if (FLIGHT_MODE(BARO_MODE))
+                }
+                if (FLIGHT_MODE(BARO_MODE)) {
                     tmpi += 200;
-                if (FLIGHT_MODE(RANGEFINDER_MODE))
-                    tmpi += 400;
+                }
 
-                if (FLIGHT_MODE(GPS_HOLD_MODE))
+                if (FLIGHT_MODE(GPS_HOLD_MODE)) {
                     tmpi += 1000;
-                if (FLIGHT_MODE(GPS_HOME_MODE))
+                }
+                if (FLIGHT_MODE(GPS_HOME_MODE)) {
                     tmpi += 2000;
-                if (FLIGHT_MODE(HEADFREE_MODE))
+                }
+                if (FLIGHT_MODE(HEADFREE_MODE)) {
                     tmpi += 4000;
+                }
 
                 smartPortSendPackage(id, (uint32_t)tmpi);
                 *clearToSend = false;

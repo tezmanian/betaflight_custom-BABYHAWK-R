@@ -23,7 +23,6 @@
 #ifdef TINYBEEF3
 #define TARGET_BOARD_IDENTIFIER "TBF3"
 
-#define CONFIG_FASTLOOP_PREFERRED_ACC ACC_DEFAULT
 
 #define LED0_PIN                PB8
 #else
@@ -59,8 +58,6 @@
 #undef USE_RTC_TIME
 #undef USE_RX_MSP
 #undef USE_ESC_SENSOR_INFO
-
-#define CONFIG_FASTLOOP_PREFERRED_ACC ACC_NONE
 
 #define LED0_PIN                PB3
 #endif
