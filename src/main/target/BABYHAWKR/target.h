@@ -21,60 +21,9 @@
 #pragma once
 
 #undef USE_DSHOT_DMAR           // OMNIBUS (F3) does not benefit from burst Dshot
-
-// Removed to make the firmware fit into flash (in descending order of priority):
 #undef USE_GYRO_OVERFLOW_CHECK
-//#undef USE_GYRO_LPF2
-
-#undef USE_TELEMETRY_HOTT
-#undef USE_TELEMETRY_MAVLINK
-#undef USE_TELEMETRY_LTM
-#undef USE_TELEMETRY_FRSKY_HUB
-#undef USE_TELEMETRY_SMARTPORT
-#undef USE_TELEMETRY_IBUS
-#undef USE_TELEMETRY_IBUS_EXTENDED
-#undef USE_TELEMETRY_JETIEXBUS
-#undef USE_PWM
-#undef USE_PPM
-
-#undef USE_BOARD_INFO
-#undef USE_EXTENDED_CMS_MENUS
-//#undef USE_RTC_TIME
-#undef USE_RX_MSP
-#undef USE_ESC_SENSOR_INFO
-
-#undef USE_SERIALRX_CRSF
-#undef USE_SERIALRX_IBUS
-#undef USE_SERIALRX_SPEKTRUM
-#undef USE_SERIALRX_SUMD
-#undef USE_SERIALRX_SUMH
-#undef USE_SERIALRX_XBUS
-#undef USE_SERIALRX_JETIEXBUS
-#undef USE_SERIALRX_FPORT
-
-#undef USE_BLACKBOX
-#undef USE_LED_STRIP
-#undef USE_SERVOS
-
-#undef GPS
-#undef USE_GPS_NMEA
-#undef USE_GPS_UBLOX
-#undef USE_GPS_RESCUE
-#undef MAG
-
-#define USE_SMART_FEEDFORWARD
-#define USE_THROTTLE_BOOST
-#define USE_RC_SMOOTHING_FILTER
-#define USE_ITERM_RELAX
-#define USE_ABSOLUTE_CONTROL
-
-#define USE_ACRO_TRAINER
-#define USE_VIRTUAL_CURRENT_METER
-#define USE_GYRO_LPF2
 
 #define TARGET_BOARD_IDENTIFIER "OMNI" // https://en.wikipedia.org/wiki/Omnibus
-
-#define CONFIG_FASTLOOP_PREFERRED_ACC ACC_NONE
 
 #define LED0_PIN                PB3
 
@@ -83,27 +32,89 @@
 #define BEEPER_INVERTED
 
 #define USE_EXTI
-#define MPU_INT_EXTI PC13
+#define USE_GYRO_EXTI
+#define GYRO_1_EXTI_PIN         PC13
 #define USE_MPU_DATA_READY_SIGNAL
 
-#define MPU6000_SPI_INSTANCE    SPI1
-#define MPU6000_CS_PIN          PA4
+#define GYRO_1_SPI_INSTANCE     SPI1
+#define GYRO_1_CS_PIN           PA4
 
 #define USE_GYRO
 #define USE_GYRO_SPI_MPU6000
-#define GYRO_MPU6000_ALIGN      CW90_DEG
+#define GYRO_1_ALIGN            CW90_DEG
 
 #define USE_ACC
 #define USE_ACC_SPI_MPU6000
-#define ACC_MPU6000_ALIGN       CW90_DEG
+#define ACC_1_ALIGN             CW90_DEG
 
-//#define BMP280_SPI_INSTANCE     SPI1
-//#define BMP280_CS_PIN           PA13
+#undef USE_BARO
+#undef USE_BARO_BMP280
+#undef USE_BARO_SPI_BMP280
 
-//#define USE_BARO
-//#define USE_BARO_BMP280
-//#define USE_BARO_SPI_BMP280
+#undef USE_MAG
+#undef USE_VTX_COMMON
 
+#undef USE_PPM
+#undef USE_PWM
+#undef USE_SERIALRX_CRSF
+#undef USE_SERIALRX_IBUS
+#undef USE_SERIALRX_JETIEXBUS
+#undef USE_SERIALRX_SPEKTRUM
+#undef USE_SERIALRX_SUMD
+#undef USE_SERIALRX_SUMH
+#undef USE_SERIALRX_XBUS
+
+#undef USE_CRSF_CMS_TELEMETRY
+#undef USE_TELEMETRY_CRSF
+#undef USE_TELEMETRY_HOTT
+#undef USE_TELEMETRY_IBUS
+#undef USE_TELEMETRY_IBUS_EXTENDED
+#undef USE_TELEMETRY_JETIEXBUS
+#undef USE_TELEMETRY_LTM
+#undef USE_TELEMETRY_MAVLINK
+#undef USE_TELEMETRY_SRXL
+#undef USE_TELEMETRY_FRSKY_HUB
+#undef USE_TELEMETRY_SMARTPORT
+
+#undef USE_SERIALRX_FPORT
+#define USE_SERIALRX_SBUS
+#undef USE_LED_STRIP
+
+#define USE_GYRO_LPF2
+
+#undef GPS
+#undef USE_GPS_NMEA
+#undef USE_GPS_UBLOX
+#undef USE_GPS_RESCUE
+
+#undef USE_BLACKBOX
+#undef USE_TELEMETRY
+
+#define USE_LAUNCH_CONTROL
+#define USE_DYN_LPF
+#define USE_D_MIN
+
+#define USE_THROTTLE_BOOST
+#define USE_INTEGRATED_YAW_CONTROL
+
+#define USE_ITERM_RELAX
+#define USE_RC_SMOOTHING_FILTER
+#define USE_THRUST_LINEARIZATION
+#define USE_TPA_MODE
+
+#define USE_ACRO_TRAINER
+#define USE_AIRMODE_LPF
+#define USE_DASHBOARD
+#define USE_OSD
+#define USE_OSD_OVER_MSP_DISPLAYPORT
+#define USE_ABSOLUTE_CONTROL
+#define USE_OSD_PROFILES
+#define USE_OSD_STICK_OVERLAY
+#define USE_SMART_FEEDFORWARD
+#define USE_RC_SMOOTHING_FILTER
+
+#undef USE_SERVOS
+#undef USE_BRUSHED_ESC_AUTODETECT
 //#define USE_RANGEFINDER
 //#define USE_RANGEFINDER_HCSR04
 //#define RANGEFINDER_HCSR04_ECHO_PIN          PB1
@@ -115,10 +126,10 @@
 #define USE_UART1
 #define USE_UART2
 #define USE_UART3
-//#define USE_SOFTSERIAL1
-//#define USE_SOFTSERIAL2
+#define USE_SOFTSERIAL1
+#define USE_SOFTSERIAL2
 
-#define SERIAL_PORT_COUNT       4 
+#define SERIAL_PORT_COUNT       6
 
 #define UART1_TX_PIN            PA9
 #define UART1_RX_PIN            PA10
@@ -145,6 +156,8 @@
 #define SPI1_SCK_PIN            PA5
 #define SPI1_MISO_PIN           PA6
 #define SPI1_MOSI_PIN           PA7
+//#define SPI1_TX_DMA_OPT         0 // DMA1_Channel3
+//#define SPI1_RX_DMA_OPT         0 // DMA1_Channel2
 
 // OSD define info:
 //   feature name (includes source) -> MAX_OSD, used in target.mk
@@ -155,8 +168,6 @@
 #define MAX7456_SPI_CS_PIN      PB1
 #define MAX7456_SPI_CLK         (SPI_CLOCK_STANDARD) // 10MHz
 #define MAX7456_RESTORE_CLK     (SPI_CLOCK_FAST)
-//#define MAX7456_DMA_CHANNEL_TX            DMA1_Channel3
-//#define MAX7456_DMA_CHANNEL_RX            DMA1_Channel2
 //#define MAX7456_DMA_IRQ_HANDLER_ID        DMA1_CH3_HANDLER
 
 #define USE_SPI
@@ -167,22 +178,12 @@
 #define SPI2_MISO_PIN           PB14
 #define SPI2_MOSI_PIN           PB15
 
-//#define USE_SDCARD
-
-//#define SDCARD_DETECT_INVERTED
-//#define SDCARD_DETECT_PIN                   PC14
-
-//#define SDCARD_SPI_INSTANCE                 SPI2
-//#define SDCARD_SPI_CS_PIN                   SPI2_NSS_PIN
-
-// SPI2 is on the APB1 bus whose clock runs at 36MHz. Divide to under 400kHz for init:
-//#define SDCARD_SPI_INITIALIZATION_CLOCK_DIVIDER 128
-// Divide to under 25MHz for normal operation:
-//#define SDCARD_SPI_FULL_SPEED_CLOCK_DIVIDER     2
-
+#undef USE_SDCARD
+#undef USE_SDCARD_SPI
 // DSHOT output 4 uses DMA1_Channel5, so don't use it for the SDCARD until we find an alternative
+
 #ifndef USE_DSHOT
-#define SDCARD_DMA_CHANNEL_TX               DMA1_Channel5
+#define SDCARD_SPI_DMA_OPT                  0    // DMA 1 Channel 5
 #endif
 
 // Performance logging for SD card operations:
@@ -198,10 +199,10 @@
 //#define RSSI_ADC_PIN                PB1
 //#define ADC_INSTANCE                ADC3
 
-//#define USE_TRANSPONDER
-//#define REDUCE_TRANSPONDER_CURRENT_DRAW_WHEN_USB_CABLE_PRESENT
+#undef USE_TRANSPONDER
+#undef REDUCE_TRANSPONDER_CURRENT_DRAW_WHEN_USB_CABLE_PRESENT
 
-//#define ENABLE_BLACKBOX_LOGGING_ON_SDCARD_BY_DEFAULT
+#define ENABLE_BLACKBOX_LOGGING_ON_SDCARD_BY_DEFAULT
 
 #define DEFAULT_RX_FEATURE      FEATURE_RX_PPM
 #define DEFAULT_FEATURES        (FEATURE_OSD)
@@ -212,8 +213,6 @@
 //#define BUTTON_B_PIN            PB0
 
 //#define AVOID_UART3_FOR_PWM_PPM // Disable this for using UART3
-
-#define USE_SERIAL_4WAY_BLHELI_INTERFACE
 
 #define TARGET_IO_PORTA         0xffff
 #define TARGET_IO_PORTB         0xffff
