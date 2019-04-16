@@ -17,7 +17,10 @@ pipeline:
       - make arm_sdk_install
       - make
     when:
-      branch: babyhawk-r
+      branch: 
+        exclude:
+        - development
+        - feature/*
 
   build_release:
     image: ubuntu:latest
