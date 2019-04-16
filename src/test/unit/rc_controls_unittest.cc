@@ -52,7 +52,7 @@ extern "C" {
 
     #include "fc/rc_controls.h"
     #include "fc/runtime_config.h"
-    #include "fc/fc_core.h"
+    #include "fc/core.h"
 
     #include "scheduler/scheduler.h"
 }
@@ -87,6 +87,7 @@ TEST_F(RcControlsModesTest, updateActivatedModesWithAllInputsAtMidde)
     }
 
     // when
+    analyzeModeActivationConditions();
     updateActivatedModes();
 
     // then
@@ -178,6 +179,7 @@ TEST_F(RcControlsModesTest, updateActivatedModesUsingValidAuxConfigurationAndRXV
     bitArraySet(&activeBoxIds, 5);
 
     // when
+    analyzeModeActivationConditions();
     updateActivatedModes();
 
     // then
@@ -566,7 +568,6 @@ TEST_F(RcControlsAdjustmentsTest, processPIDIncreasePidController0)
     pidProfile.pid[PID_YAW].P = 7;
     pidProfile.pid[PID_YAW].I = 17;
     pidProfile.pid[PID_YAW].D = 27;
-    useAdjustmentConfig(&pidProfile);
     // and
     controlRateConfig_t controlRateConfig;
     memset(&controlRateConfig, 0, sizeof (controlRateConfig));
@@ -602,7 +603,8 @@ TEST_F(RcControlsAdjustmentsTest, processPIDIncreasePidController0)
             (1 << 5);
 
     // when
-    useRcControlsConfig(&pidProfile);
+    currentPidProfile = &pidProfile;
+    rcControlsInit();
     processRcAdjustments(&controlRateConfig);
 
     // then
@@ -638,7 +640,6 @@ TEST_F(RcControlsAdjustmentsTest, processPIDIncreasePidController2)
     pidProfile.D_f[PIDPITCH] = 20.0f;
     pidProfile.D_f[PIDROLL] = 25.0f;
     pidProfile.D_f[PIDYAW] = 27.0f;
-    useAdjustmentConfig(&pidProfile);
 
     // and
     controlRateConfig_t controlRateConfig;
@@ -675,7 +676,8 @@ TEST_F(RcControlsAdjustmentsTest, processPIDIncreasePidController2)
             (1 << 5);
 
     // when
-    useRcControlsConfig(&escAndServoConfig, &pidProfile);
+    currentPidProfile = &pidProfile;
+    rcControlsInit();
     processRcAdjustments(&controlRateConfig, &rxConfig);
 
     // then
@@ -707,9 +709,9 @@ void gyroStartCalibration(bool isFirstArmingCalibration)
 {
     UNUSED(isFirstArmingCalibration);
 }
-void applyAndSaveAccelerometerTrimsDelta(rollAndPitchTrims_t*) {}
+void applyAccelerometerTrimsDelta(rollAndPitchTrims_t*) {}
 void handleInflightCalibrationStickPosition(void) {}
-bool feature(uint32_t) { return false;}
+bool featureIsEnabled(uint32_t) { return false;}
 bool sensors(uint32_t) { return false;}
 void tryArm(void) {}
 void disarm(void) {}
@@ -733,14 +735,17 @@ uint16_t flightModeFlags = 0;
 int16_t heading;
 uint8_t stateFlags = 0;
 int16_t rcData[MAX_SUPPORTED_RC_CHANNEL_COUNT];
+pidProfile_t *currentPidProfile;
 rxRuntimeConfig_t rxRuntimeConfig;
 PG_REGISTER(blackboxConfig_t, blackboxConfig, PG_BLACKBOX_CONFIG, 0);
 PG_REGISTER(systemConfig_t, systemConfig, PG_SYSTEM_CONFIG, 2);
 void resetArmingDisabled(void) {}
 timeDelta_t getTaskDeltaTime(cfTaskId_e) { return 20000; }
-}
 armingDisableFlags_e getArmingDisableFlags(void) {
     return (armingDisableFlags_e) 0;
 }
 bool isTryingToArm(void) { return false; }
 void resetTryingToArm(void) {}
+void setLedProfile(uint8_t profile) { UNUSED(profile); }
+uint8_t getLedProfile(void) { return 0; }
+}
